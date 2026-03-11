@@ -30,11 +30,19 @@ In other words, in the case of neural networks, the problem of maintaining the s
 \section{Architecture}
 
 In practical terms, we solve the problem described in \Cref{sec:problem} by introducing a new model on top of the existing one. In this work, we focus on explaining traditional fine-tuned classifiers composed of a feature encoder and a classification head. The overall idea of the architecture is depicted in \Cref{fig:training}.
-\begin{figure}[ht!]
+
+\begin{figure}[t!]
     \centering
     \includegraphics[scale=0.65]{./img/idea.pdf}
     \caption{General idea of the method. Given a traditional classifier (encoder and classification head), we introduce a new module (scorer) that learns to score the input $I$ of the encoder given its embeddings $E$.} \label{fig:training}
 \end{figure}
+
+\begin{figure}[t!]
+    \centering
+    \includegraphics[scale=0.65]{./img/scorer-arch.pdf}
+    \caption{Architecture of the scorer} \label{fig:scorer}
+\end{figure}
+
 The flow between the encoder and the classifier is as usual. The newly introduced model, called scorer for simplicity, should take as input some information of the input features of the explainee model and it outputs a score for each of them. In case of classifiers, we use the embedding space of the encoder as inputs for the scorer.
 
 We also note that in principle we could provide to the scorer the original input itself. Intuitively, this formulation would still allow to learn some reasonable attribution maps that highlight what is relevant in the input as the goal is still to minimize the task specific loss. However, it would require the scorer to solve the whole classification task as well and no signal from the target model to explain would be included in the flow, so the result of this setup would be closer to an explainable-by-design model.
@@ -47,11 +55,6 @@ In terms of architecture, a crucial choice for the scorer, although unusual, is 
 \end{enumerate*}
 The ReLU activation is used to impose a strong distinction between relevant signal (activation greater than $0$) and background that is not useful for the attribution map. The sigmoid function squeezes the scores into $[0, 1]$ and adds a further level of non-linearity, and the final rescaling actually ensures that the scores span from $0$ to $1$.
 
-\begin{figure}[ht]
-    \centering
-    \includegraphics[scale=0.65]{./img/scorer-arch.pdf}
-    \caption{Architecture of the scorer} \label{fig:scorer}
-\end{figure}
 
 
 \section{Training and Inference}
@@ -83,7 +86,7 @@ where $\gamma$ is the self-calibrating weight based on the distance between loss
 
 In terms of parameter updates, we must note that this method does not require to modify the target model as its weights are kept frozen when training the scorer, as depicted in \Cref{fig:training}. This avoids leaking any relevant information for the scorer into the original classifier, so that we can ensure that what it learns is to actually provide attribution maps for the target model without any shortcut. 
 
-\begin{figure}[ht!]
+\begin{figure}[t!]
     \centering
     \includegraphics[scale=0.65]{./img/inference.pdf}
     \caption{At inference time, the flow of the classifier is unaffected by the scorer. The output of the scorer corresponds to the attribution map.} \label{fig:inference}
@@ -106,13 +109,13 @@ The embeddings at step (c) are the most information rich and can be used as the 
 \begin{figure}[t!]
     \begin{subfigure}[b]{0.49\textwidth}
         \centering
-        \includegraphics[scale=0.65]{./img/arch-text1.pdf}
+        \includegraphics[scale=0.6]{./img/arch-text1.pdf}
         \caption{}
     \end{subfigure}
     \quad
     \begin{subfigure}[b]{0.49\textwidth}
         \centering
-        \includegraphics[scale=0.65]{./img/arch-text2.pdf}
+        \includegraphics[scale=0.6]{./img/arch-text2.pdf}
         \caption{}
     \end{subfigure}
     \caption{Training architecture for text classifiers} \label{fig:training_text}
@@ -122,6 +125,12 @@ The embeddings at step (c) are the most information rich and can be used as the 
 
 \subsection{Image Modality} \label{sec:image_scorer}
 
+\begin{figure}[t!]
+    \centering
+    \includegraphics[scale=0.65]{./img/arch-image.pdf}
+    \caption{Training architecture for image classifiers} \label{fig:training_image}
+\end{figure}
+
 For image classification, we use the traditional approach consisting of an image encoder with a classification head \cite{image_survey_2022}. The flow of the classification model is therefore the following:
 \begin{enumerate*}
     \item embed the input image with the encoder,
@@ -129,14 +138,14 @@ For image classification, we use the traditional approach consisting of an image
 \end{enumerate*}
 The embeddings at step (a) can be used as the input of the scorer that produces a score for each input pixel. At training time, as depicted in \Cref{fig:training_image}, we apply these scores to weigh each pixel of the input image before passing them through the encoder. Differently from text, in this case we do not need to add any additional considerations as the input image is already differentiable and the whole process can be directly integrated into the training process.
 
-\begin{figure}[ht!]
-    \centering
-    \includegraphics[scale=0.65]{./img/arch-image.pdf}
-    \caption{Training architecture for image classifiers} \label{fig:training_image}
-\end{figure}
-
 
 \subsection{Multimodality}
+
+\begin{figure}[t!]
+    \centering
+    \includegraphics[scale=0.6]{./img/arch-multi.pdf}
+    \caption{Inference for text-image classifiers} \label{fig:inference_multi}
+\end{figure}
 
 When moving to multimodal models, we can naturally extend our idea by combining the two scorers for text and image as we described in \Cref{sec:text_scorer,sec:image_scorer}. We depict this idea in \Cref{fig:inference_multi} for the case of text-image models. Additionally, in the case of multimodal models, the output of the two encoders are merged through a fusion layer \cite{fusion}, which stays frozen as the rest of the classifier. To avoid losing cross-modality information, the scorers in the multimodal case also take, alongside the embeddings of their modality, the output produced by the fusion layer as conditioning. The loss function is also modified to account for the two scorers: firstly, by extending \Cref{eq:loss} to the multimodal case, we evaluate the cross-entropy loss with both text and image masked so that the scorers are encouraged to preserve the original model. Secondly, to make the task easier and guide the learning process, we also minimize the cross-entropy of the two modalities separately by masking only either the text or the image. Thirdly, as there are two scorers, we introduce two sets of penalties to also handle the attribution maps produced by the two modalities separately. Therefore, after training the target multimodal classifier, we keep both encoders, the fusion layer, and the classification head frozen. Then, we train the two scorers by optimizing the following function:
 \begin{equation}
@@ -159,8 +168,3 @@ where:
     \item $\S_1$ and $\S_2$ are the attribution scores of the two modalities,
     \item $\gamma$ is the self-calibrating parameter based on the logits obtained by masking both modalities.
 \end{itemize}
-\begin{figure}[t!]
-    \centering
-    \includegraphics[scale=0.6]{./img/arch-multi.pdf}
-    \caption{Inference for text-image classifiers} \label{fig:inference_multi}
-\end{figure}
