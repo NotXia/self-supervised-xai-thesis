@@ -1,0 +1,14 @@
+\hspace{0pt}
+\vfill
+
+\thispagestyle{empty}
+\section*{\makebox[\linewidth]{\normalsize Abstract}}
+\noindent
+
+The inherent black-box nature of deep neural networks poses significant challenges to their trustworthiness, fairness, and development in real-world applications. A well-known class of post-hoc explainability methods is based on producing attribution maps to score the input features of a model. However, existing methods share some limitations such as sensitivity to the choice of method-specific hyperparameters, computational cost, and trade-offs between faithfulness to the model's decision process and visual clarity of the attribution maps.
+We propose a self-supervised attribution method that tackles explainability as a learning problem. The approach consists of training, in a self-supervised manner with self-calibrating method-specific hyperparameters, a dedicated model that can produce attribution maps in a single forward pass by using the intermediate activations of the target model.
+We benchmark our method on text, image, and multimodal classification tasks across nine different datasets and evaluate it both quantitatively and qualitatively. Our results show that our method, compared to other baselines such as Saliency, Guided Backpropagation, Integrated Gradients, DeepLIFT, and SHAP-based methods, is the one achieving the best trade-off between faithfulness to the underlying model and visual clarity of the produced attribution maps, indicating that it is able to balance both requirements while being easier to use in practice and computationally less expensive at inference.
+
+
+\vfill
+\hspace{0pt}

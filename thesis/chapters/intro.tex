@@ -1,0 +1,21 @@
+\chapter{Introduction}
+
+The rapid advancement of deep learning has led to neural networks being deployed in an increasingly wide range of real-world applications across different domains. While these models often achieve remarkable performance, their internal decision-making processes remain a black-box, making it difficult to understand why a specific prediction is made. This lack of transparency raises important concerns around trust, fairness, and accountability while also making it difficult to analyze and debug these models from a technical perspective \cite{2019_xai, 2020_xai}.
+
+The field of explainable artificial intelligence has grown considerably in response to these demands \cite{2024_xai_manifesto, 2020_xai_survey, 2021_xai_multidisciplinary}. Among the different families of explainability methods, attribution-based post-hoc approaches have emerged as a prominent class of techniques that aim to quantify the contribution of each input feature to a given model prediction. These methods are applied transparently after training to produce attribution maps that assign an importance score to each input element.
+
+However, existing attribution methods share a number of limitations. Firstly, several of them require providing either some reference baselines whose choice can significantly influence the resulting explanations or have method-specific hyperparameters that need tuning \cite{lig, deeplift, gradient_shap}. Secondly, many methods have relatively high computational cost at inference time as they rely on repeated backpropagation passes or stochastic sampling procedures. Also, some methods produce attribution maps that are faithful to the model's decision process but lack in visual clarity, while others that produce visually appealing maps but lack faithfulness \cite{gevaert2024evaluating,L_fstr_m_2022}. 
+
+In this thesis, we propose an attribution method that addresses some of the limitations of existing approaches by framing the task as a learning problem. The core idea is to train a dedicated neural network module to predict attribution maps with a single forward pass using information from the intermediate representations of the model being explained. We show that this can be done in a self-supervised manner, without requiring ground-truth explanations, and without the need to introduce new method-specific hyperparameters as they can be automatically calibrated during training.
+
+The main contributions of this thesis are the following:
+\begin{enumerate*}
+    \item We propose a self-supervised attribution method that trains a dedicated neural network to produce attribution maps without requiring ground-truth explanations and without introducing new method-specific hyperparameters;
+    \item We provide an implementation of the method for text, image, and multimodal classifiers;
+    \item We comprehensively evaluate the method on multiple datasets spanning different modalities using both quantitative metrics and qualitative analysis.
+\end{enumerate*}
+
+The rest of this thesis is organized as follows. \Cref{ch:background} provides background on explainability, motivates the proposed approach, and reviews related work. \Cref{ch:method} presents the formalization of the method, and describes its architecture and training procedure. \Cref{ch:setup} details the experimental setup, the metrics, baselines, datasets, and implementation choices. \Cref{ch:results} reports and discusses the quantitative and qualitative results, as well as an ablation study of our choices. \Cref{ch:conclusion} contains some closing remarks and outlines possible future directions.
+
+
+\paragraph{Code availability.} The code to reproduce all the experiments presented in this thesis is available at \url{https://github.com/NotXia/self-supervised-xai}.

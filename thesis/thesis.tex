@@ -1,0 +1,210 @@
+\documentclass[12pt,a4paper,openright,twoside]{report}
+\title{A Self-Supervised Attribution Method for Explaining\\Neural Networks}
+\author{Tian Cheng, Xia}
+
+\usepackage[english]{babel}
+\usepackage[
+    headheight=15pt,
+    footskip=1.5cm,
+]{geometry}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{csquotes}
+\usepackage{lipsum}  
+\usepackage{xcolor}
+
+% Math stuff
+\usepackage{amsmath}
+\usepackage{amssymb, dsfont} % Additional symbols
+\usepackage[group-separator={,}]{siunitx}
+\usepackage{mathtools} % More math things
+
+% Links
+\usepackage[
+    hidelinks, pdfusetitle, pdftex,
+    pdfkeywords={keyword1,keyword2}
+]{hyperref} 
+\usepackage[all]{hypcap} % Anchors links to beginning of content
+\usepackage[nameinlink]{cleveref} % Better hyperlinks
+
+% Typography and page style
+\usepackage{tocloft}            % Table of contents typography
+\usepackage{titlesec}           % Titles typography
+\usepackage{indentfirst}        % Indents first paragraph
+\usepackage{emptypage}          % Removes page number in blank pages (e.g., in \cleardoublepage)
+\usepackage{fancyhdr}           % Page styling
+\usepackage[bottom]{footmisc}   % Moves footnotes at the bottom of the page
+\usepackage{epigraph}
+\usepackage[titletoc]{appendix}
+\usepackage[inline]{enumitem}   % Inline enumerate
+
+% Tables
+\usepackage{multirow, makecell}
+\usepackage{booktabs}
+
+% Figures
+\usepackage{subcaption}
+
+% Additional environments
+\usepackage[inline]{enumitem} % Inline enumerate with *
+
+
+%%% Bibliography
+\usepackage[
+    mincitenames = 1,
+    maxcitenames = 1,
+]
+{biblatex}
+\setcounter{biburllcpenalty}{3000}
+\DeclareNameAlias{author}{family-given}
+\DeclareNameAlias{editor}{family-given}
+\DeclareNameAlias{translator}{family-given}
+\renewcommand*{\revsdnamepunct}{}
+
+\addbibresource{bibliography/references.bib}
+\addbibresource{bibliography/datasets.bib}
+\addbibresource{bibliography/related.bib}
+%%% END Bibliography
+
+
+%%% Page styling
+\titleformat{\chapter}[hang]{\normalfont\huge\bfseries}{\thechapter}{20pt}{\huge}
+\oddsidemargin=30pt \evensidemargin=20pt
+\linespread{1.5}
+
+\fancyhf{}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{#1}{}}
+
+\fancypagestyle{plain}{%
+    \fancyhf{}
+    \fancyfoot[LE,RO]{\thepage}
+    \renewcommand{\headrulewidth}{0mm}
+}
+
+\fancypagestyle{fancyMainContent}{%
+    \fancyhf{}
+    \fancyhead[LE]{Chapter \thechapter\ \leftmark}
+    % \fancyhead[LE]{\leftmark}
+    \fancyhead[RO]{\rightmark}
+    \fancyfoot[LE,RO]{\thepage}
+    \renewcommand{\headrulewidth}{1pt}
+}
+
+\fancypagestyle{fancyAppendixContent}{%
+    \fancyhf{}
+    \fancyhead[LE]{Appendix \thechapter\ \leftmark}
+    % \fancyhead[LE]{\leftmark}
+    \fancyhead[RO]{\rightmark}
+    \fancyfoot[LE,RO]{\thepage}
+    \renewcommand{\headrulewidth}{1pt}
+}
+%%% END Page styling
+
+
+%%% Miscellaneous
+\setlist[description]{labelindent=\parindent}
+\setlist[enumerate,1]{label={(\alph*)}}
+%%% END Miscellaneous
+
+
+%%% Manual hyphenation
+% \usepackage{hyphenat}
+% \hyphenation{BERT-Sco-re}
+%%% END Manual hyphenation
+
+
+%%% Acronyms
+\usepackage{acro}
+\acsetup{
+    uppercase/list,
+    list/uppercase/cmd = \ecapitalisewords
+}
+\DeclareAcronym{ai}{short=AI, long=artificial intelligence}
+\DeclareAcronym{eu}{short=EU, long=European Union}
+\DeclareAcronym{gdpr}{short=GDPR, long=General Data Protection Regulation}
+\DeclareAcronym{llm}{short=LLM, long=Large Language Model}
+%%% END Acronyms
+
+
+%%% Macros
+
+\def\antehoc{{\textit{ante-hoc}} }
+\def\Antehoc{{\textit{Ante-hoc}} }
+\def\posthoc{{\textit{post-hoc}} }
+\def\Posthoc{{\textit{Post-hoc}} }
+
+\def\M{{\ensuremath{\mathbf{M}}}}
+\def\S{{\ensuremath{\mathbf{S}}}}
+\def\L{{\ensuremath{\mathcal{L}}}}
+\def\x{{\ensuremath{\mathbf{x}}}}
+
+\newcommand{\std}[1]{{\footnotesize\ensuremath{\pm} #1}}
+
+%%% END Macros
+
+
+\begin{document}
+
+    \makeatletter
+    % Cover
+    \def\sigillumPath{img/sigillum-negative.png}
+    \include{front.tex}
+
+    % Frontispiece
+    \def\sigillumPath{img/sigillum.png}
+    \include{front.tex}
+    
+
+    \makeatother
+    \pagestyle{plain}
+    \pagenumbering{roman}
+    \cleardoublepage
+
+    %%% Epigraph
+    \vspace*{3cm}
+    \begin{flushright}
+        \thispagestyle{empty}
+        \setlength\epigraphwidth{0.49\textwidth}
+        \epigraph{\textit{“It may seem very foolish in your eyes, but really I don't know how you deduced it.”}}{Dr. John H. Watson in \textit{The Crooked Man}\\Arthur Conan Doyle}
+    \end{flushright}
+    \cleardoublepage
+
+    %%% Abstract
+    \include{chapters/abstract.tex}
+    \cleardoublepage
+
+    %%% Table of contents
+    \tableofcontents
+    \cleardoublepage
+    % \listoffigures
+    % \cleardoublepage
+    % \listoftables
+    % \cleardoublepage
+    % \printacronyms
+    % \cleardoublepage
+
+    \pagestyle{fancyMainContent}
+    \pagenumbering{arabic}
+    %%% Main content
+    \include{chapters/intro.tex}
+    \include{chapters/related.tex}
+    \include{chapters/method.tex}
+    \include{chapters/setup.tex}
+    \include{chapters/results.tex}
+    \include{chapters/conclusion.tex}
+    \cleardoublepage
+
+    %%% Bibliography
+    \pagestyle{plain}
+    \printbibliography[heading=bibintoc]
+
+    %%% Appendix
+    % \cleardoublepage
+    % \pagestyle{fancyAppendixContent}
+    % \begin{appendices}
+    %     \crefalias{chapter}{appendix}
+    %     \include{chapters/appendix.tex}
+    % \end{appendices}
+
+\end{document}

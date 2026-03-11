@@ -1,0 +1,9 @@
+\chapter{Conclusion} \label{ch:conclusion}
+
+In this thesis, we presented a method for post-hoc explainability that produces attribution maps for the input space of neural networks. Our approach consists of training a dedicated neural network to produce attribution maps. With specific architectural and training choices, we developed a method that does not introduce new hyperparameters to tune other than those of a traditional neural network. After performing extensive quantitative and qualitative evaluation on classification datasets with text, image, and text-image modalities, we observed that our method produces attribution maps that are visually appealing while remaining faithful to the underlying model. Compared to other baselines, our method achieves the best trade-off between faithfulness, which we quantify as average drop and deletion AUC, and visual appeal, which we measure using complexity and compactness metrics, alongside a qualitative analysis. Future work can explore several directions: 
+\begin{enumerate*}
+    \item experiment with other modalities such as audio or time-series,
+    \item apply the same approach on regression or generative tasks,
+    \item explore other architectures for producing the attribution maps,
+    \item perform more extensive experiments with larger datasets and with different domains.
+\end{enumerate*}

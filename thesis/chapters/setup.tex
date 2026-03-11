@@ -1,0 +1,165 @@
+\chapter{Experimental Setup} \label{ch:setup}
+
+
+
+\section{Metrics}
+
+It is well-known that evaluating an explainability method is hard and currently there is no consensus on how it should be done \cite{L_fstr_m_2022}. However, it is unfeasible and unreasonable to manually evaluate attribution maps as it is time-consuming and it might not follow human intuition, while still correctly explaining the model. Therefore, on a quantitative side, we adopt a diverse set of commonly used metrics \cite{gevaert2024evaluating} with the goal of covering different aspects and desiderata of an explanation, while recognizing that no metric alone provides a reasonable way to assess an explainability method. More specifically, to assess whether the explanation is faithful to the model, we adopt average drop \cite{gradcam_plusplus} and deletion AUC \cite{deletion_auc}. Conversely, to assess how the explanation is appealing, we use complexity \cite{complexity_metric} and compactness \cite{sparsity_metric}. In the rest of this section, we present the chosen metrics.
+
+
+\paragraph{Average drop.}
+Average drop \cite{gradcam_plusplus} measures how much the confidence of a model decreases when only the relevant portion of the input is provided. First, the attribution map is used as a multiplicative scale to weight the input and produce its masked version. Then, a comparison is performed between the prediction confidence of the model using the full input and the masked one. More formally, let $f(\cdot)$ denote the model’s confidence score for the predicted class on a given input, $x$ be the original input, and $x_{\text{masked}}$ be the masked input. Average drop is computed as:
+\begin{equation}
+    \texttt{average drop} = \max\Big\{ 0, f(x) - f(x_{\text{masked}}) \Big\}.
+\end{equation}
+Lower values indicate that the explanation successfully captures the most relevant regions for the prediction, as the confidence remains high even after masking. Conversely, a high average drop indicates that important information has been removed, which means that the explanation is less faithful.
+
+
+\paragraph{Deletion AUC}
+Deletion Area Under the Curve (deletion AUC) is an extension of average drop and evaluates how quickly a model’s confidence decreases as the most relevant input features are progressively removed \cite{deletion_auc}. Starting from the original input, features are iteratively removed in descending order of attribution importance, and the model’s confidence score is recorded after each removal step. Formally, given the attribution map, the confidence score $f(x_k)$ is computed after removing the top $k$ most relevant features according to the attribution scores. By plotting the confidence scores as a function of the importance levels, we obtain a curve and the metric is computed as the area under it.
+
+A lower deletion AUC indicates that removing highly attributed regions rapidly degrades the model’s confidence, suggesting that the explanation correctly identifies regions critical to the model’s decision. On the other hand, higher deletion AUC indicates that the attribution map is not correctly ranking the most relevant features as they are not associated to the highest values.
+
+
+\paragraph{Complexity} Complexity evaluates how much of the input space is relevant according to the attribution map \cite{complexity_metric}. This metric provides an idea of how big the relevant region in the attribution map is and can be useful to determine how easily interpretable the map is. In practice, we compute complexity of an attribution map $S$ as its norm to capture its magnitude and therefore how much of the input space is relevant:
+\begin{equation}
+    \texttt{complexity} = \Vert S \Vert.
+\end{equation}
+
+Lower complexity values correspond to more compact explanations, which, intuitively, are generally preferred from a human perspective.
+
+
+\paragraph{Compactness} Compactness measures the extent to which an attribution map is concise and concentrates relevance on a small subset of the input features. In its original work \cite{sparsity_metric}, this metric is called sparsity. However, its definition in \citeauthor{sparsity_metric} \cite{sparsity_metric} is somewhat counterintuitive to interpret as a higher sparsity indicate a more compact attribution map. Therefore, we decided to denote the metric as compactness in the rest of the work.
+Formally, given an attribution score $S$, compactness is computed as:
+\begin{equation}
+    \texttt{compactness} = \frac{S_\text{max}}{S_\text{mean}},
+\end{equation}
+where $S_\text{max}$ is the maximum of the attribution map and $S_\text{mean}$ is its mean. It is worth noting that, as we normalize attribution maps into $[0, 1]$, the numerator of the formula is always $1$.
+
+Higher compactness indicates that the explanation is more concentrated in specific regions, reducing visual clutter and improving interpretability. On the contrary, lower compactness indicates that many regions of the attribution map are active which might make it more difficult to understand.
+
+
+
+
+\section{Baselines} \label{sec:baselines}
+
+We compare the proposed approach against several other attribution methods. For our benchmarks, we choose well-known approaches for neural networks that work with any type of data format so that we can apply them across different modalities. In particular, we start from simple methods such as Saliency and Guided Backpropagation, and move to more complex ones such as Integrated Gradients, DeepLIFT, and SHAP-based approaches. The rest of this section presents our baselines of choice.
+
+\paragraph{Saliency.} Saliency maps \cite{saliency} are a simple gradient-based explainability baseline for neural networks. The method computes the gradient of the model output with respect to the input features and interprets the magnitude of each partial derivative as an indicator of local sensitivity. Features with larger absolute gradient values are considered more influential as perturbing them would affect the output the most. However, although simple and straightforward, they are often noisy and can suffer from gradient saturation effects, particularly when applied to deep neural networks.
+
+\paragraph{Guided Backpropagation.}
+Guided Backpropagation \cite{guided_backprop} is a heuristic approach that modifies the standard backpropagation procedure by suppressing negative gradients during the backward pass so that only gradients corresponding to positive forward and backward signals are propagated. This allows to produce sharper and visually clearer saliency maps. However, this approach lacks a rigorous theoretical foundation. It cannot be proved that it satisfies any desirable property and it may not faithfully reflect the underlying process of the model.
+
+\paragraph{Integrated Gradients.}
+Integrated Gradients (IG) \cite{lig} is a method based on integrating the gradient along a continuous path from a baseline input $x'$ to the actual input $x$. Formally, the attribution for a feature $i$ is defined as:
+\begin{equation}
+    \texttt{IG}_i(x) = (x_i - x'_i) \int_{0}^{1} 
+    \frac{\partial f\big(x' + \alpha (x - x')\big)}{\partial x_i} 
+    \, d\alpha.
+\end{equation}
+Formulated in this way, Integrated Gradients has some theoretical guarantees and satisfies the axioms of sensitivity (i.e., the attribution should be different given two inputs differing by one feature but with different labels) and implementation invariance (i.e., the attribution should be identical for functionally equivalent models).
+In practice, the integral is approximated numerically using a finite Riemann sum, which introduces a trade-off between computational cost and approximation accuracy. Overall, Integrated Gradients is generally more stable and less prone to saturation, although its results depend on the choice of baselines.
+
+\paragraph{DeepLIFT.}
+Deep Learning Important FeaTures (DeepLIFT) \cite{deeplift} explains predictions by comparing neuron activations to those obtained from a reference input. It propagates activation differences backward through the network using specific contribution rules. For each neuron, the deviation from its reference activation is decomposed and attributed to its inputs. In practice, DeepLIFT mitigates issues related to saturation and flat activation regions. Moreover, it satisfies a summation-to-delta property, ensuring that the total attributions equal the difference between the model output at the input and at the reference. However, similar to Integrated Gradients, the method depends on the selection of an appropriate reference input, which can influence the resulting explanations.
+
+\paragraph{DeepLIFT-SHAP.}
+DeepLIFT-SHAP \cite{deepliftshap} uses DeepLIFT as a way to approximate SHAP (SHapley Additive exPlanations) values \cite{deepliftshap,shap}. SHAP is grounded in the concept of Shapley values from cooperative game theory \cite{shapley_values}. It sees each feature as a player in a cooperative game, and its contribution to the prediction corresponds to its average marginal contribution across all possible feature subsets. Due to its computational complexity, Shapley values have to be approximated. DeepLIFT-SHAP computes them efficiently by applying DeepLIFT across multiple reference baselines and averaging the resulting attributions. This preserves the additive structure of SHAP while remaining computationally feasible for deep neural networks.
+
+\paragraph{Gradient-SHAP.}
+Gradient-SHAP \cite{gradient_shap} is another approach for approximating SHAP values by applying integrated gradients through stochastic sampling of baselines. Rather than integrating along a single deterministic path from a given baseline, the method samples random interpolation points between reference samples and the input. By averaging gradients computed along these sampled paths, Gradient-SHAP is able to approximate Shapley value attributions. Moreover, this stochastic formulation improves robustness to local irregularities in the gradient landscape. However, computational complexity increases with the number of samples required to obtain stable estimates.
+
+
+
+\begin{table}[t!]
+    \centering
+    \footnotesize
+    \caption{Datasets used for evaluation} \label{tab:datasets}
+    \begin{tabular}{llp{7cm}}
+        \toprule
+        \textbf{Modality} & \textbf{Name} & \textbf{Task} \\
+        \midrule
+        \multirow{3}{*}{Text} & Tweet Sentiment Extraction & Sentiment analysis, short texts. \\ 
+                              & IMDB                       & Sentiment analysis, long texts. \\
+                              & LIAR                       & Fact checking. \\
+        \midrule
+        \multirow{3}{*}{Image} & MNIST      & Image classification, grayscale low-resolution. \\ 
+                               & CIFAR-10   & Image classification, colored low-resolution. \\ 
+                               & Imagenette & Image classification, colored high-resolution. \\ 
+        \midrule
+        \multirow{3}{*}{Multimodal} & Flickr8k & Image-caption alignment. \\ 
+                                    & Hateful Memes & Hateful content detection. \\ 
+                                    & SNLI-VE & Visual entailment. \\ 
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{Datasets}
+
+To comprehensively evaluate the proposed attribution methods, we use a diverse collection of datasets spanning text, image, and multimodal tasks with varying degrees of complexity. In particular, the datasets range from short to long texts, from low-resolution to high-quality images, and from simple discriminative tasks to more complex reasoning ones. In this section, we present all the datasets we use for evaluation and, in \Cref{tab:datasets}, we provide a summary of these datasets.
+
+
+
+\subsection{Text Classification}
+
+For the textual modality, we consider Tweet Sentiment Extraction \cite{tweet_sentiment,mteb}, IMDB \cite{imdb}, and LIAR \cite{politifact} so that we cover different domains, linguistic styles, and document lengths. 
+
+\paragraph{Tweet Sentiment Extraction.}
+Tweet Sentiment Extraction \cite{tweet_sentiment,mteb} consists of short, informal social media posts annotated with binary sentiment labels. This dataset was selected as social media posts are typically concise and contain non-standard language such as abbreviations, hashtags, emojis, and typos. This high lexical variability and limited context make this dataset particularly suitable for studying fine-grained token-level attributions, as relevant sentiment cues may be sparse and embedded within noisy text.
+
+\paragraph{IMDB.}
+The IMDB movie reviews dataset \cite{imdb} is a large-scale binary sentiment classification benchmark composed of long-form movie reviews. In contrast to short tweets, reviews often contain multiple arguments, narrative elements, and mixed sentiment expressions. This dataset allows evaluating attribution methods under long-context conditions, where relevant evidence may be distributed across the document. 
+
+\paragraph{LIAR.}
+The LIAR benchmark \cite{politifact} is composed of political statements extracted from PolitiFact, a fact checking website, where each document is associated with a binary label according to their factual correctness. This dataset provides a more reasoning-intensive setting compared to IMDB while maintaining a setup with longer documents to make the task more challenging and more interesting from an explainability perspective.
+
+
+\subsection{Image Classification}
+
+To evaluate attribution in the visual domain, we use MNIST \cite{mnist}, CIFAR-10 \cite{cifar10}, and Imagenette \cite{imagenette}, three standard computer vision benchmarks with increasing visual and semantic complexity.
+
+\paragraph{MNIST.}
+MNIST \cite{mnist} is a dataset consisting of grayscale images of size $28 \times 28$ containing handwritten digits. It is a dataset with a simple visual structure and limited background variation, which makes it a good baseline to check the effectiveness of explainability methods in the easiest scenario.
+
+\paragraph{CIFAR-10.}
+CIFAR-10 \cite{cifar10} contains $32 \times 32$ color images distributed across ten object categories. Compared to MNIST, it introduces more intra-class variability, background noise, and color information, which increases the level of difficulty. Therefore, attribution maps in this case should be slightly more challenging to determine due to the presence of more noise.
+
+\paragraph{Imagenette.}
+Imagenette \cite{imagenette} is a subset of ImageNet \cite{imagenet} composed of ten easily distinguishable classes. We choose this version due to computational limitations. The images in the dataset are higher in resolution and exhibit richer semantic structure than CIFAR-10, making the task more complex and closer to a real-life application.
+
+
+\subsection{Multimodal Classification}
+
+To extend our evaluation beyond unimodal settings, we also consider multimodal benchmarks. In particular, we evaluate on Flickr8k \cite{flickr8k}, Hateful memes \cite{memes}, and SNLI-VE \cite{snli_ve}.
+
+\paragraph{Flickr8k.}
+Flickr8k \cite{flickr8k} consists of images paired with natural language captions. We formulate a binary classification task in which the model must determine whether a given caption correctly describes the image. This dataset acts as a starting baseline as it provides a simple task of matching text and image, without involving complex semantic connections.
+
+\paragraph{Hateful Memes.}
+The Hateful Memes dataset \cite{memes} contains the image and the textual content of memes in which hateful intent often emerges only from the interaction between the two modalities. This makes the task more challenging than Flickr8k as it does not simply require to align the two representations and involves some semantic understanding. This also makes generating attribution maps more interesting to understand how the model is connecting different concepts.
+
+\paragraph{SNLI-VE.}
+SNLI-VE \cite{snli_ve} is composed of image-sentence pairs from Stanford Natural Language Inference \cite{snli} and Flickr30k \cite{flickr30k} and it is designed for the task of visual entailment. An image and a short text act as the premise while another short text provides a hypothesis. The task consists of predicting whether there is entailment, contradiction, or neutrality between premise and hypothesis. This dataset requires fine-grained semantic alignment between visual and linguistic content which introduces a further level of difficulty compared to Hateful Memes.
+
+
+
+\section{Architectures}
+
+
+\paragraph{Text.} For text classification, we use two distinct transformer encoders \cite{transformer} for the classifier and the scorer module. For the classification task itself, we use RoBERTa \cite{roberta} as the pretrained encoder. For the scorer module, we instead use a custom small transformer initialized from scratch. It takes as input the embeddings of each token produced by RoBERTa and outputs the attribution scores. During training, these scores are applied to the static embeddings of the input tokens, before passing through the transformer layers of RoBERTa.
+
+
+\paragraph{Image.} For image classification, we use a vision transformer \cite{vit} for the classification task and a U-Net \cite{unet} like network for the scorer module. The U-Net starts from the final embeddings produced by the vision transformer and upsamples it using transposed convolutions. As in the original U-Net, intermediate layers from the vision transformer are also included during upsampling as skip connections to provide more information. During training, the attribution map produced by the scorer is applied to the input image before feeding it through the backbone.
+
+
+\paragraph{Text-image.} For multimodal classification, the model is a combination of the text and image classifiers. We therefore use both RoBERTa and vision transformer, and the outputs of the two encoders are put together through a fusion layer, which is implemented as a small transformer encoder. For the scorers, both modules work as previously described with the addition of a further step where the embeddings produced by the fusion model are incorporated into the flow to account for cross-modal information.
+
+
+
+
+\section{Implementation Details}
+
+We use PyTorch \cite{pytorch} to implement our method and to train the neural networks for each task. Pretrained transformers and vision transformers are provided by Hugging Face. All datasets are taken from Hugging Face \cite{huggingface} as well, with the exception of MNIST and CIFAR which are provided by TorchVision \cite{torchvision}. For the baseline explainability methods, we use the implementation provided by Captum \cite{captum}.  
+
+During training, we split the datasets into training, validation, and test sets. We use the default splits provided by the dataset when available, and manually split when the dataset is provided as a whole.
+When training the models, we first fine-tune the classifier while keeping the scorer module frozen. Then, we train the scorer by keeping the classifier frozen. We use as optimizer AdamW \cite{adamw} in all cases with a learning rate of $10^{-5}$ for fine-tuning and $2 \cdot 10^{-4}$ for training the scorer. All experiments have been executed on NVIDIA A100 GPUs with 80GB of memory provided by the National Institute of Informatics in Japan. The base classifiers are trained for 10 epochs maximum, while the scorers for 5, as we observed that they tend to stop very early due to early stopping. It took us approximately two hours to train each base classifier and its scorer on a single NVIDIA A100, and an additional hour to evaluate across all baselines.
