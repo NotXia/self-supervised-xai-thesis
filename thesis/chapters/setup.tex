@@ -4,7 +4,7 @@
 
 \section{Metrics}
 
-It is well-known that evaluating an explainability method is hard and currently there is no consensus on how it should be done \cite{L_fstr_m_2022}. However, it is unfeasible and unreasonable to manually evaluate attribution maps as it is time-consuming and it might not follow human intuition, while still correctly explaining the model. Therefore, on a quantitative side, we adopt a diverse set of commonly used metrics \cite{gevaert2024evaluating} with the goal of covering different aspects and desiderata of an explanation, while recognizing that no metric alone provides a reasonable way to assess an explainability method. More specifically, to assess whether the explanation is faithful to the model, we adopt average drop \cite{gradcam_plusplus} and deletion AUC \cite{deletion_auc}. Conversely, to assess how the explanation is appealing, we use complexity \cite{complexity_metric} and compactness \cite{sparsity_metric}. In the rest of this section, we present the chosen metrics.
+It is well-known that evaluating an explainability method is hard and currently there is no consensus on how it should be done \cite{L_fstr_m_2022}. However, it is unfeasible and unreasonable to manually evaluate attribution maps as it is time-consuming and it might not follow human intuition, while still correctly explaining the model. Therefore, on a quantitative side, we adopt a diverse set of commonly used metrics \cite{gevaert2024evaluating} with the goal of covering different aspects and desiderata of an explanation, while recognizing that no metric alone provides a reasonable way to assess an explainability method. More specifically, to assess whether the explanation is faithful to the model, we adopt average drop \cite{gradcam_plusplus} and deletion AUC \cite{deletion_auc}. Conversely, to assess how the explanation is appealing, we use complexity \cite{complexity_metric} and sparsity \cite{sparsity_metric}. In the rest of this section, we present the chosen metrics.
 
 
 \paragraph{Average drop.}
@@ -29,14 +29,13 @@ A lower deletion AUC indicates that removing highly attributed regions rapidly d
 Lower complexity values correspond to more compact explanations, which, intuitively, are generally preferred from a human perspective.
 
 
-\paragraph{Compactness} Compactness measures the extent to which an attribution map is concise and concentrates relevance on a small subset of the input features. In its original work \cite{sparsity_metric}, this metric is called sparsity. However, its definition in \citeauthor{sparsity_metric} \cite{sparsity_metric} is somewhat counterintuitive to interpret as a higher sparsity indicate a more compact attribution map. Therefore, we decided to denote the metric as compactness in the rest of the work.
-Formally, given an attribution score $S$, compactness is computed as:
+\paragraph{Sparsity} Sparsity measures the extent to which an attribution map is concise and concentrates relevance on a small subset of the input features \cite{sparsity_metric}. Formally, given an attribution score $S$, sparsity is computed as:
 \begin{equation}
-    \texttt{compactness} = \frac{S_\text{max}}{S_\text{mean}},
+    \texttt{sparsity} = \frac{S_\text{max}}{S_\text{mean}},
 \end{equation}
 where $S_\text{max}$ is the maximum of the attribution map and $S_\text{mean}$ is its mean. It is worth noting that, as we normalize attribution maps into $[0, 1]$, the numerator of the formula is always $1$.
 
-Higher compactness indicates that the explanation is more concentrated in specific regions, reducing visual clutter and improving interpretability. On the contrary, lower compactness indicates that many regions of the attribution map are active which might make it more difficult to understand.
+Higher sparsity indicates that the explanation is more concentrated in specific regions, reducing visual clutter and improving interpretability. On the contrary, lower sparsity indicates that many regions of the attribution map are active which might make it more difficult to understand.
 
 
 
@@ -74,7 +73,7 @@ Gradient-SHAP \cite{gradient_shap} is another approach for approximating SHAP va
 \begin{table}[t!]
     \centering
     \footnotesize
-    \def\arraystretch{0.75}
+    \def\arraystretch{0.9}
     \caption{Datasets used for evaluation} \label{tab:datasets}
     \begin{tabular}{llp{7cm}}
         \toprule

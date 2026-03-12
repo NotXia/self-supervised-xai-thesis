@@ -3,7 +3,7 @@
 
 \section{Text Classification}
 
-Quantitative results for Tweet Sentiment Extraction, IMDB, and LIAR are presented in \Cref{tab:tweet}, \Cref{tab:imdb}, and \Cref{tab:politifact}, respectively. Radar plots of the metrics is also reported in \Cref{fig:radar_text}. In all three datasets, our method yields the lowest complexity score and consistently achieves the second-best compactness score after Saliency. Instead, Guided Backpropagation is the method that performs best in terms of average drop while DeepLIFT has better results in terms of deletion AUC. Also, as an overall behavior across the three datasets, we can observe that Integrated Gradients, DeepLIFT, DeepLIFT-SHAP, Gradient-SHAP, and Guided Backpropagation all result in high complexity and low compactness. Saliency instead is the worst performing in terms of average drop and deletion AUC, but achieves the best compactness and reasonable complexity. This highlights a clear trade-off that these methods exhibit between producing attribution maps that are visually appealing and more faithful to the model prediction.
+Quantitative results for Tweet Sentiment Extraction, IMDB, and LIAR are presented in \Cref{tab:tweet}, \Cref{tab:imdb}, and \Cref{tab:politifact}, respectively. Radar plots of the metrics is also reported in \Cref{fig:radar_text}. In all three datasets, our method yields the lowest complexity score and consistently achieves the second-best sparsity score after Saliency. Instead, Guided Backpropagation is the method that performs best in terms of average drop while DeepLIFT has better results in terms of deletion AUC. Also, as an overall behavior across the three datasets, we can observe that Integrated Gradients, DeepLIFT, DeepLIFT-SHAP, Gradient-SHAP, and Guided Backpropagation all result in high complexity and low sparsity. Saliency instead is the worst performing in terms of average drop and deletion AUC, but achieves the best sparsity and reasonable complexity. This highlights a clear trade-off that these methods exhibit between producing attribution maps that are visually appealing and more faithful to the model prediction.
 
 \begin{table}[t!]
     \centering
@@ -13,7 +13,7 @@ Quantitative results for Tweet Sentiment Extraction, IMDB, and LIAR are presente
     \makebox[\linewidth][c]{%
     \begin{tabular}{lcccc}
         \toprule
-        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Compactness $\uparrow$} \\
+        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Sparsity $\uparrow$} \\
         \midrule
         Saliency         & 1.91 \std{1.76}          & 2.49 \std{1.78}          & 13.11  \std{3.02}          & \textbf{412.95 \std{158.54}} \\
         Guided Backprop. & \textbf{0.09 \std{0.19}} & \textbf{1.38 \std{0.98}} & 312.17 \std{33.18}         & 2.03   \std{0.23} \\
@@ -35,7 +35,7 @@ Quantitative results for Tweet Sentiment Extraction, IMDB, and LIAR are presente
     \makebox[\linewidth][c]{%
     \begin{tabular}{lcccc}
         \toprule
-        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Compactness $\uparrow$} \\
+        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Sparsity $\uparrow$} \\
         \midrule
         Saliency         & 3.19 \std{1.04}          & 3.06 \std{0.99}          & 18.57  \std{5.97}            & \textbf{114.05 \std{91.08}} \\
         Guided Backprop. & \textbf{0.05 \std{0.14}} & 1.62 \std{0.56}          & 313.09 \std{41.16}           & 2.04   \std{0.29} \\
@@ -57,7 +57,7 @@ Quantitative results for Tweet Sentiment Extraction, IMDB, and LIAR are presente
     \makebox[\linewidth][c]{%
     \begin{tabular}{lcccc}
         \toprule
-        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Compactness $\uparrow$} \\
+        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Sparsity $\uparrow$} \\
         \midrule
         Saliency         & 1.44 \std{1.20}          & 1.36 \std{1.14}          & 16.59  \std{5.93}            & \textbf{104.42 \std{85.75}} \\
         Guided Backprop. & \textbf{0.09 \std{0.16}} & 0.74 \std{0.61}          & 316.11 \std{46.54}           & 2.03   \std{0.32} \\
@@ -114,12 +114,12 @@ Qualitatively, we manually evaluate some samples from IMDB. We choose this datas
     \caption{Sample from IMDB} \label{fig:imdb_sample}
 \end{figure}
 
-Putting all these observations together, we can conclude that our method, being the one with the least complexity metric and with generally higher compactness, produces attribution maps that are closer to binary masks, indicating that it gives a clear distinction between what the classifier is considering relevant and what it is not, making its attribution maps generally more appealing. Moreover, by achieving decent average drop and deletion AUC, it shows that it is able to highlight relevant features of the input space, which indicates that it does not lose in faithfulness.
+Putting all these observations together, we can conclude that our method, being the one with the least complexity metric and with generally higher sparsity, produces attribution maps that are closer to binary masks, indicating that it gives a clear distinction between what the classifier is considering relevant and what it is not, making its attribution maps generally more appealing. Moreover, by achieving decent average drop and deletion AUC, it shows that it is able to highlight relevant features of the input space, which indicates that it does not lose in faithfulness.
 
 
 
 \section{Image Classification}
-For the image classification tasks, we report the result for MNIST, CIFAR-10, and Imagenette on \Cref{tab:mnist}, \Cref{tab:cifar10}, and \Cref{tab:imagenette}, respectively, while the radar plots are depicted in \Cref{fig:radar_image}. For these datasets, our method consistently achieves the highest average drop and deletion AUC. In terms of complexity, Integrated Gradients is the method performing the best, while, for compactness, Saliency has the highest results. Instead, as for the case of text, DeepLIFT, DeepLIFT-SHAP, Gradient-SHAP, and Guided Backpropagation all produce highly complex and weakly compact maps, but achieve high results in terms of average drop and deletion AUC. This highlights again a trade-off between faithfulness and appeal that is present among these methods, and ours is again located as a balanced approach for these two requirements.
+For the image classification tasks, we report the result for MNIST, CIFAR-10, and Imagenette on \Cref{tab:mnist}, \Cref{tab:cifar10}, and \Cref{tab:imagenette}, respectively, while the radar plots are depicted in \Cref{fig:radar_image}. For these datasets, our method consistently achieves the highest average drop and deletion AUC. In terms of complexity, Integrated Gradients is the method performing the best, while, for sparsity, Saliency has the highest results. Instead, as for the case of text, DeepLIFT, DeepLIFT-SHAP, Gradient-SHAP, and Guided Backpropagation all produce highly complex and weakly compact maps, but achieve high results in terms of average drop and deletion AUC. This highlights again a trade-off between faithfulness and appeal that is present among these methods, and ours is again located as a balanced approach for these two requirements.
 
 \begin{table}[t!]
     \centering
@@ -129,7 +129,7 @@ For the image classification tasks, we report the result for MNIST, CIFAR-10, an
     \makebox[\linewidth][c]{%
     \begin{tabular}{lcccc}
         \toprule
-        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Compactness $\uparrow$} \\
+        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Sparsity $\uparrow$} \\
         \midrule
         Saliency         & 0.63 \std{0.31}          & 0.81 \std{0.14}          & 13.39  \std{4.57}           & \textbf{42.85 \std{36.35}} \\
         Guided Backprop. & 0.07 \std{0.19}          & 0.45 \std{0.10}          & 112.17 \std{13.22}          & 2.03  \std{0.26} \\
@@ -151,7 +151,7 @@ For the image classification tasks, we report the result for MNIST, CIFAR-10, an
     \makebox[\linewidth][c]{%
     \begin{tabular}{lcccc}
         \toprule
-        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Compactness $\uparrow$} \\
+        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Sparsity $\uparrow$} \\
         \midrule
         Saliency         & 0.88 \std{0.09}          & 0.83 \std{0.05}          & 12.49  \std{7.20}           & \textbf{63.91 \std{58.92}} \\
         Guided Backprop. & 0.21 \std{0.37}          & 0.48 \std{0.08}          & 111.92 \std{12.76}          & 2.03  \std{0.24} \\
@@ -173,7 +173,7 @@ For the image classification tasks, we report the result for MNIST, CIFAR-10, an
     \makebox[\linewidth][c]{%
     \begin{tabular}{lcccc}
         \toprule
-        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Compactness $\uparrow$} \\
+        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Sparsity $\uparrow$} \\
         \midrule
         Saliency         & 0.50 \std{0.17}          & 0.53 \std{0.09}          & 10.46  \std{5.07}           & \textbf{73.55 \std{60.17}} \\
         Guided Backprop. & 0.05 \std{0.11}          & 0.28 \std{0.06}          & 112.95 \std{12.52}          & 2.01  \std{0.23} \\
@@ -225,7 +225,7 @@ Overall, results with images highlight that, as for text, the attribution maps p
 
 \section{Multimodal Classification}
 
-Results on multimodal datasets are reported in \Cref{tab:flickr8k}, \Cref{tab:hateful_memes}, and \Cref{tab:snli_ve} for Flickr8k, Hateful Memes, and SNLI-VE, respectively, and the radar plots are in \Cref{fig:radar_mm}. Consistent with the previous results, Saliency is the method that achieves the best complexity and compactness, while the other gradient-based methods perform best in terms of average drop and deletion AUC. Our method again performs with a trade-off between the two sides by achieving competitive average drop while maintaining a lower complexity and higher compactness.
+Results on multimodal datasets are reported in \Cref{tab:flickr8k}, \Cref{tab:hateful_memes}, and \Cref{tab:snli_ve} for Flickr8k, Hateful Memes, and SNLI-VE, respectively, and the radar plots are in \Cref{fig:radar_mm}. Consistent with the previous results, Saliency is the method that achieves the best complexity and sparsity, while the other gradient-based methods perform best in terms of average drop and deletion AUC. Our method again performs with a trade-off between the two sides by achieving competitive average drop while maintaining a lower complexity and higher sparsity.
 
 \begin{table}[t!]
     \centering
@@ -235,7 +235,7 @@ Results on multimodal datasets are reported in \Cref{tab:flickr8k}, \Cref{tab:ha
     \makebox[\linewidth][c]{%
     \begin{tabular}{lcccc}
         \toprule
-        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Compactness $\uparrow$} \\
+        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Sparsity $\uparrow$} \\
         \midrule
         Saliency         & 1.86 \std{1.70}          & 1.79 \std{1.07}          & \textbf{15.20  \std{3.50}}  & \textbf{79.10 \std{36.06}} \\
         Guided Backprop. & \textbf{0.71 \std{0.98}} & \textbf{1.11 \std{0.66}} & 174.10 \std{15.05}          & 2.05 \std{0.18} \\
@@ -257,7 +257,7 @@ Results on multimodal datasets are reported in \Cref{tab:flickr8k}, \Cref{tab:ha
     \makebox[\linewidth][c]{%
     \begin{tabular}{lcccc}
         \toprule
-        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Compactness $\uparrow$} \\
+        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Sparsity $\uparrow$} \\
         \midrule
         Saliency         & 1.26 \std{1.34}          & 1.25 \std{0.98}          & \textbf{14.80  \std{3.79}}  & \textbf{84.04 \std{36.24}} \\
         Guided Backprop. & 0.92 \std{1.00}          & 0.80 \std{0.53}          & 175.90 \std{14.93}          & 2.03 \std{0.18} \\
@@ -279,7 +279,7 @@ Results on multimodal datasets are reported in \Cref{tab:flickr8k}, \Cref{tab:ha
     \makebox[\linewidth][c]{%
     \begin{tabular}{lcccc}
         \toprule
-        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Compactness $\uparrow$} \\
+        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Sparsity $\uparrow$} \\
         \midrule
         Saliency         & 4.27 \std{1.83}          & 3.89 \std{1.65}          & \textbf{14.41  \std{3.84}}  & \textbf{76.98 \std{35.92}} \\
         Guided Backprop. & 0.27 \std{0.32}          & 2.10 \std{0.86}          & 173.94 \std{14.78}          & 2.05 \std{0.17} \\
@@ -370,7 +370,7 @@ For a qualitative evaluation, we analyze 100 samples from Flickr8k. We observed 
     \caption{Sample from Flickr8k} \label{fig:flickr8k_sample}
 \end{figure}
 
-Overall, also in the case of multimodal classification, our method performs consistently by producing attribution maps with relatively low complexity and high compactness while maintaining reasonable average drop and deletion AUC, highlighting again a good trade-off between visually appealing and faithful attribution maps compared to the other baselines that tend to favor only one side.
+Overall, also in the case of multimodal classification, our method performs consistently by producing attribution maps with relatively low complexity and high sparsity while maintaining reasonable average drop and deletion AUC, highlighting again a good trade-off between visually appealing and faithful attribution maps compared to the other baselines that tend to favor only one side.
 
 
 
@@ -387,7 +387,7 @@ To empirically experiment with the effectiveness of our design choices, we analy
     \item remove every component we introduce and train the model with only cross-entropy.
 \end{enumerate*}
 
-Results on Tweet Sentiment Extraction are presented in \Cref{tab:tweet_ablation} and a sample from the dataset is presented in \Cref{fig:tweet_ablation}. In terms of architecture, we can observe that, by either removing the final ReLU, sigmoid, or rescaling, there is a worsening in compactness and an improvement in average drop and deletion AUC. This indicates, also as we can observe in \Cref{fig:tweet_ablation}, that the attribution maps becomes more expansive and considers more input tokens as relevant. Also in terms of loss function, we can observe that, after removing each component, results are decreased across all metrics. Finally, if everything is excluded, we can see that the method performs well in terms of average drop and deletion AUC, while it worsens in complexity and compactness, indicating that the attribution map, without constraints, becomes trivially a non-informative result.
+Results on Tweet Sentiment Extraction are presented in \Cref{tab:tweet_ablation} and a sample from the dataset is presented in \Cref{fig:tweet_ablation}. In terms of architecture, we can observe that, by either removing the final ReLU, sigmoid, or rescaling, there is a worsening in sparsity and an improvement in average drop and deletion AUC. This indicates, also as we can observe in \Cref{fig:tweet_ablation}, that the attribution maps becomes more expansive and considers more input tokens as relevant. Also in terms of loss function, we can observe that, after removing each component, results are decreased across all metrics. Finally, if everything is excluded, we can see that the method performs well in terms of average drop and deletion AUC, while it worsens in complexity and sparsity, indicating that the attribution map, without constraints, becomes trivially a non-informative result.
 
 
 \begin{table}[t!]
@@ -398,7 +398,7 @@ Results on Tweet Sentiment Extraction are presented in \Cref{tab:tweet_ablation}
     \makebox[\linewidth][c]{%
     \begin{tabular}{lcccc}
         \toprule
-        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Compactness $\uparrow$} \\
+        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Sparsity $\uparrow$} \\
         \midrule
         Full              & 1.11 \std{1.52} & 1.61 \std{1.57} & 2.71 \std{1.04} & 87.21 \std{72.40} \\
         \midrule
@@ -433,7 +433,7 @@ Results on Tweet Sentiment Extraction are presented in \Cref{tab:tweet_ablation}
 \end{figure}
 
 
-Ablation results on Imagenette are presented in \Cref{tab:imagenette_ablation} and a sample for qualitative analysis is shown in \Cref{fig:imagenette_ablation}. As for text, in all cases, but the scenario where rescaling is removed, performance on complexity and compactness tend to worsen. In the case of rescaling, the behavior is opposite as average drop and deletion AUC worsen but complexity and compactness improve. However, qualitatively we can see that the best result is obtained with every component as they allow to obtain a clearer distinction between what is relevant in the input.
+Ablation results on Imagenette are presented in \Cref{tab:imagenette_ablation} and a sample for qualitative analysis is shown in \Cref{fig:imagenette_ablation}. As for text, in all cases, but the scenario where rescaling is removed, performance on complexity and sparsity tend to worsen. In the case of rescaling, the behavior is opposite as average drop and deletion AUC worsen but complexity and sparsity improve. However, qualitatively we can see that the best result is obtained with every component as they allow to obtain a clearer distinction between what is relevant in the input.
 
 \begin{table}[t!]
     \centering
@@ -443,7 +443,7 @@ Ablation results on Imagenette are presented in \Cref{tab:imagenette_ablation} a
     \makebox[\linewidth][c]{%
     \begin{tabular}{lcccc}
         \toprule
-        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Compactness $\uparrow$} \\
+        \textbf{Method} & \textbf{Average drop $\downarrow$} & \textbf{Deletion AUC $\downarrow$} & \textbf{Complexity $\downarrow$} & \textbf{Sparsity $\uparrow$} \\
         \midrule
         Full               & 0.02 \std{0.07} & 0.27 \std{0.12} & 60.43  \std{19.45} & 7.02  \std{2.92} \\
         \midrule
