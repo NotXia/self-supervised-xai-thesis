@@ -15,13 +15,13 @@ Average drop \cite{gradcam_plusplus} measures how much the confidence of a model
 Lower values indicate that the explanation successfully captures the most relevant regions for the prediction, as the confidence remains high even after masking. Conversely, a high average drop indicates that important information has been removed, which means that the explanation is less faithful.
 
 
-\paragraph{Deletion AUC}
+\paragraph{Deletion AUC.}
 Deletion Area Under the Curve (deletion AUC) is an extension of average drop and evaluates how quickly a model’s confidence decreases as the most relevant input features are progressively removed \cite{deletion_auc}. Starting from the original input, features are iteratively removed in descending order of attribution importance, and the model’s confidence score is recorded after each removal step. Formally, given the attribution map, the confidence score $f(x_k)$ is computed after removing the top $k$ most relevant features according to the attribution scores. By plotting the confidence scores as a function of the importance levels, we obtain a curve and the metric is computed as the area under it.
 
 A lower deletion AUC indicates that removing highly attributed regions rapidly degrades the model’s confidence, suggesting that the explanation correctly identifies regions critical to the model’s decision. On the other hand, higher deletion AUC indicates that the attribution map is not correctly ranking the most relevant features as they are not associated to the highest values.
 
 
-\paragraph{Complexity} Complexity evaluates how much of the input space is relevant according to the attribution map \cite{complexity_metric}. This metric provides an idea of how big the relevant region in the attribution map is and can be useful to determine how easily interpretable the map is. In practice, we compute complexity of an attribution map $S$ as its norm to capture its magnitude and therefore how much of the input space is relevant:
+\paragraph{Complexity.} Complexity evaluates how much of the input space is relevant according to the attribution map \cite{complexity_metric}. This metric provides an idea of how big the relevant region in the attribution map is and can be useful to determine how easily interpretable the map is. In practice, we compute complexity of an attribution map $S$ as its norm to capture its magnitude and therefore how much of the input space is relevant:
 \begin{equation}
     \texttt{complexity} = \Vert S \Vert.
 \end{equation}
@@ -29,7 +29,7 @@ A lower deletion AUC indicates that removing highly attributed regions rapidly d
 Lower complexity values correspond to more compact explanations, which, intuitively, are generally preferred from a human perspective.
 
 
-\paragraph{Sparsity} Sparsity measures the extent to which an attribution map is concise and concentrates relevance on a small subset of the input features \cite{sparsity_metric}. Formally, given an attribution score $S$, sparsity is computed as:
+\paragraph{Sparsity.} Sparsity measures the extent to which an attribution map is concise and concentrates relevance on a small subset of the input features \cite{sparsity_metric}. Formally, given an attribution score $S$, sparsity is computed as:
 \begin{equation}
     \texttt{sparsity} = \frac{S_\text{max}}{S_\text{mean}},
 \end{equation}
