@@ -79,7 +79,7 @@ Ideally, we would like to avoid having to choose and tune arbitrary hyperparamet
             &+ \gamma \left( \frac{1}{\vert \S \vert} \sum_i^{\vert S \vert} s_i \right)^2 \\
             &+ \gamma \frac{1}{\vert \S \vert} \sum_i^{\vert S \vert} (s_i \cdot (1-s_i))^2 \\
         \end{aligned} \\
-        \text{with } \gamma = \frac{1}{\texttt{clip}\{ \L_\text{task}(\x \otimes \S; f) - \L_\text{task}(\x; f), [0, 1] \}},
+        \text{with } \gamma = \texttt{clip}\left\{ \frac{1}{\L_\text{task}(\x \otimes \S; f) - \L_\text{task}(\x; f) + \varepsilon}, [0, 1] \right\},
     \end{gathered}
 \end{equation}
 where $\gamma$ is the self-calibrating weight based on the distance between losses and $\texttt{clip}$ constrains the weight in $[0, 1]$ to avoid having values that grow uncontrollably, which would make the penalties reach unreasonably high magnitudes, or that go below zero, which would have the opposite effect we aim at achieving.
